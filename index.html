@@ -1,0 +1,424 @@
+<html>
+  <head>
+    <title>Writing Stateless UIs in Javascript</title>
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Writing Stateless UIs with Flux + React</h2>
+          <p>
+            <small>by Jordan Garcia</small>
+          </p>
+        </section>
+
+        <section>
+          <h2>About Me</h2>
+          <p>Software Engineer @ Optimizely: world's most used A/B testing platform</p>
+          <p>Refactored Optimizely's Frontend to Flux</p>
+          <p>Big fan of functional javascript, stateless systems and ping pong</p>
+          <p>Not a fan of Object Oriented Programming, heirarchical inheritance and instantiating things</p>
+        </section>
+
+        <section>
+          <h2>What is a Stateless UI?</h2>
+          <ul>
+            <li class="fragment" data-fragment-index="1">UI components do not manage their own state or data</li>
+            <li class="fragment" data-fragment-index="1">A completely separate system manages state and data flow</li>
+            <li class="fragment" data-fragment-index="2">Application can be put into any state or reset completely</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Why Do We Want This?</h2>
+          <ul>
+            <li class="fragment">Creates a very thin UI layer</li>
+            <li class="fragment">Data abstraction that can be reused</li>
+            <li class="fragment">TESTABILITY!</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Whats the Difference Between Backbone Views and React Components?</h2>
+          <div class="pros-cons-list">
+            <div class="pros">
+              <h4>Backbone:</h4>
+              <ul>
+                <li><strong>Imperative</strong> </li>
+                <li>render() function attaches DOM to the page as a side effect</li>
+                <li>after the View has been instantiated, subscribe to model change events and re-render</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h4>React:</h4>
+              <ul>
+                <li><strong>Declarative</strong></li>
+                <li>render() function takes takes state + props and deterministically returns what the DOM should look like</li>
+                <li>When the state of the component or its props change the same render() function is called</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>A React Component</h2>
+          <div data-markdown>
+            <script type="text/template">
+              ```js
+              var HelloMessage = React.createClass({
+                render: function() {
+                  return <div>Hello {this.props.name}</div>;
+                }
+              });
+
+              React.render(<HelloMessage name="John" />, mountNode);
+              ```
+            </script>
+          </div>
+        </section>
+
+        <section>
+          <h2>Benefits of Declarative Views</h2>
+          <ul>
+            <li class="fragment">Views are not modelled as Finite State Machines</li>
+            <li class="fragment">Declare how a certain state should be rendered and the framework takes care of the state transition</li>
+          </ul>
+          <!-- TODO: insert react component image -->
+        </section>
+
+        <!-- BEGIN FLUX -->
+        <section>
+          <h2>Flux Architecture</h2>
+          <ul>
+            <li>Architecture, not a Framework</li>
+            <li class="fragment">Given some state + props => deterministically renders DOM</li>
+            <div data-markdown>
+              <script type="text/template">
+                ```js
+                var flux = require('flux');
+                var storeFactory = require('flux/factories/store_factory');
+                ```
+              </script>
+            </div>
+          </ul>
+        </section>
+
+        <section>
+          <section>
+            <h2>Our Problem:</h2>
+            <p>The more portable and reusable UI components became the harder it was to keep them in sync and share data</p>
+          </section>
+
+          <section>
+            <h2>Solution #1:</h2>
+            <p>Parent or Root Component manage state shared by child components</p>
+            <div class="pros-cons-list">
+              <div class="pros">
+                <h4>Pros:</h4>
+                <ul>
+                  <li>Always referencing same objects, stuff stays in sync</li>
+                </ul>
+              </div>
+              <div class="cons">
+                <h4>Cons:</h4>
+                <ul>
+                  <li>Tedious data passing down the component heirarchy</li>
+                  <li>State must be kept at the common ancestor - must refactor a lot</li>
+                  <li>Application state in UI component</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Solution #2:</h2>
+            <p>Using events to communicate changes in state</p>
+            <div class="pros-cons-list">
+              <div class="pros">
+                <h4>Pros:</h4>
+                <ul>
+                  <li>No need for passing data down component heirarchy</li>
+                </ul>
+              </div>
+              <div class="cons">
+                <h4>Cons:</h4>
+                <ul>
+                  <li>Very hard to understand</li>
+                  <li>Any component changing a piece of state is responsible for letting the world know</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Our Solution</h2>
+            <p>Use Flux as a decoupled way to model application and UI state</p>
+            <div class="pros-cons-list">
+              <div class="pros">
+                <h4>Pros:</h4>
+                <ul>
+                  <li>Data and state decoupled from the UI</li>
+                  <li>Any component can subscribe to any piece of state</li>
+                  <li>Components always stay in sync and become stateless</li>
+                  <li>Provides a predictable 1-way data flow</li>
+                </ul>
+              </div>
+              <div class="cons">
+                <h4>Cons:</h4>
+                <ul>
+                  <li>More boilerplate to do simple tasks</li>
+                  <li>A new design pattern to learn</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>Flux Overview</h2>
+          <img src="/img/flux_diagram_pres.png" alt="">
+        </section>
+
+        <section>
+          <h2>Lets See a Store</h2>
+          <div data-markdown>
+            <script type="text/template">
+              ```js
+              var flux = require('flux');
+              var storeFactory = require('flux/factories/store_factory');
+              var actionTypes = require('flux/constants/action_types');
+
+              module.exports = storeFactory.create({
+                initialize: function() {
+                  this.tableFilters = {
+                    experiments: {}
+                  };
+
+                  this.bindActions(
+                    actionTypes.DASHBOARD_SET_TABLE_FILTERS, this.__setFilters
+                  );
+                },
+
+                getFilters: function(category) {
+                  return this.tableFilters[category];
+                },
+
+                __setFilters: function(payload) {
+                  var category = payload.category;
+                  var newFilters = payload.filters;
+                  var currentFilters = this.tableFilters[category];
+
+                  if (!_.isEqual(currentFilters, newFilters)) {
+                    this.tableFilters[category] = newFilters;
+                    this.emitChange();
+                  }
+                },
+              })
+              ```
+            </script>
+          </div>
+        </section>
+
+        <section>
+          <h2>Action Example</h2>
+          <div data-markdown>
+            <script type="text/template">
+              ```js
+              var flux = require('flux');
+              var actionTypes = require('flux/constants/action_types');
+
+              flux.dispatch(actionTypes.DASHBOARD_SET_TABLE_FILTERS, {
+                category: 'experiments',
+                filters: {
+                  string: 'optimizely',
+                }
+              });
+              ```
+            </script>
+          </div>
+        </section>
+
+        <section>
+          <h2>Getters</h2>
+          <ul>
+            <li>Functional transformation and composition of data in one or many stores</li>
+            <li>This is how inter-store dependent data is resolved</li>
+            <li>No dispatcher.waitFor(store)</li>
+          </ul>
+
+          <div data-markdown class="fragment">
+            <script type="text/template">
+              ```js
+              /**
+               * Function getter to take currentProject + experiments store
+               * and return all experiments for that project
+               */
+              module.exports = [
+                'currentProject',
+                'experiments',
+                function (currentProjectStore, experimentStore) {
+                  var currentProjectId = currentProjectStore.getId()
+                  if (currentProjectId) {
+                    return experimentStore.getAll({
+                      project_id: currentProjectId
+                    });
+                  } else {
+                    return [];
+                  }
+                }
+              ];
+            ```
+            </script>
+          </div>
+        </section>
+
+        <section>
+          <h2>Getter Example</h2>
+          <p>Filtering experiments by some string</p>
+          <div data-markdown>
+            <script type="text/template">
+              ```js
+              var getCurrentProjectExperiments = require('flux/getters/current_project/experiments');
+
+              module.exports = [
+                getCurrentProjectExperiments,
+                'dashboard/tableFilters',
+                function (experiments, filterStore) {
+                  var filters = filterStore.getFilters('experiments');
+                  var filterString = filters.string;
+
+                  if (filterString) {
+                    filterString = filterString.toLowerCase();
+                    return experiments.filter(function(exp) {
+                      var title = exp.description.toLowerCase();
+                      return _.contains(title, filterString);
+                    });
+                  }
+
+                  return experiments;
+                }
+              ];
+              ```
+            </script>
+          </div>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <section>
+          <h2>Component Example</h2>
+
+          <input type="text" id="search" placeholder="search for experiments" />
+
+          <script type="text/javascript">
+            var input = document.getElementById('search')
+            input.addEventListener('keyup', function(e) {
+              flux.dispatch(actionTypes.DASHBOARD_SET_TABLE_FILTERS, {
+                category: 'experiments',
+                filters: {
+                  string: e.target.value,
+                }
+              });
+            })
+          </script>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <section>
+          <h2>How do we test it?</h2>
+          <div id="dashboard" class="fragment lego"></div>
+          <h2 style="margin-top: 30px;" class="fragment">What is the giant white box for?</h2>
+        </section>
+
+        <section>
+          <h2>Thank You!</h2>
+          <ul>
+            <li>Twitter: @jordanjgarcia</li>
+            <li>Github: https://github.com/jordanjgarcia</li>
+            <li>NuclearJS: https://github.com/optimizely/nuclear-js</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        width: 1280,
+        height: 720,
+        maxScale: 3,
+        margin: 0.1,
+
+        controls: true,
+        progress: true,
+        history: true,
+        center: false,
+
+        // theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: 'linear',// Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        ]
+			});
+		</script>
+
+	</body>
+</html>

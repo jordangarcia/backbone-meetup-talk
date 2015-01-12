@@ -1,0 +1,47 @@
+.reveal {
+  .pros-cons-list {
+    width: 85%;
+    margin: 1em auto;
+    overflow: hidden;
+
+    .pros {
+      float: left;
+    }
+
+    .cons {
+      float: right;
+    }
+
+    .pros, .cons {
+      text-align: center;
+      width: 48%;
+    }
+  }
+
+  pre {
+    code {
+      font-size: 22px;
+      line-height: 24px;
+      max-height: 600px;
+      min-height: 250px;
+    }
+
+  }
+
+  img {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+}
+
+#search {
+  font-size: 24px;
+  width: 40%;
+  margin: 20px;
+}
+
+#dashboard {
+  height: 500px !important;
+}

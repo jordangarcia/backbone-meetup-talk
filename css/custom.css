@@ -1,0 +1,28 @@
+.reveal .pros-cons-list {
+  width: 85%;
+  margin: 1em auto;
+  overflow: hidden; }
+  .reveal .pros-cons-list .pros {
+    float: left; }
+  .reveal .pros-cons-list .cons {
+    float: right; }
+  .reveal .pros-cons-list .pros, .reveal .pros-cons-list .cons {
+    text-align: center;
+    width: 48%; }
+.reveal pre code {
+  font-size: 22px;
+  line-height: 24px;
+  max-height: 600px;
+  min-height: 250px; }
+.reveal img {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important; }
+
+#search {
+  font-size: 24px;
+  width: 40%;
+  margin: 20px; }
+
+#dashboard {
+  height: 500px !important; }
