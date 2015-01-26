@@ -21,7 +21,14 @@
           <p>Software Engineer @ Optimizely: world's most used A/B testing platform</p>
           <p>Refactored Optimizely's Frontend to Flux</p>
           <p>Big fan of functional javascript, stateless systems and ping pong</p>
-          <p>Not a fan of Object Oriented Programming, heirarchical inheritance and instantiating things</p>
+        </section>
+
+        <section>
+          <h2>Table of Contents</h2>
+          <p>Defining the term "Stateless UI"</p>
+          <p>A Flux Overview</p>
+          <p>Reactive UIs</p>
+          <p>Game Design</p>
         </section>
 
         <section>
@@ -39,6 +46,41 @@
             <li class="fragment">Creates a very thin UI layer</li>
             <li class="fragment">Data abstraction that can be reused</li>
             <li class="fragment">TESTABILITY!</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>How Do We Implement a Stateless UI?</h2>
+          <ul>
+            <li class="fragment">Decoupled system for managing state</li>
+            <li class="fragment">+</li>
+            <li class="fragment">Decoupled system for reactively rendering UI</li>
+            <li class="fragment">=</li>
+            <li class="fragment">Flux + React</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What is Flux?</h2>
+          <img src="/img/simple_flux.jpg" style="width: 50%; height: 50%" alt="">
+          <ul>
+            <li class="fragment">No state is stored the view, stores dont know about views</li>
+            <li class="fragment">A single action causes a single state change</li>
+            <li class="fragment">Every action does a full roundtrop from View => Store => View</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>A More Complicated Diagram</h2>
+          <img src="/img/flux_diagram_pres.png" alt="">
+        </section>
+
+        <section>
+          <h2>Reactive UIs</h2>
+          <ul>
+            <li class="fragment">Given some state or model UI renders deterministically</li>
+            <li class="fragment">User does not have to implement state transitions, just the final states</li>
+            <li class="fragment">Tend to be declarative over imperative</li>
           </ul>
         </section>
 
@@ -65,314 +107,36 @@
         </section>
 
         <section>
-          <h2>A React Component</h2>
-          <div data-markdown>
-            <script type="text/template">
-              ```js
-              var HelloMessage = React.createClass({
-                render: function() {
-                  return <div>Hello {this.props.name}</div>;
-                }
-              });
-
-              React.render(<HelloMessage name="John" />, mountNode);
-              ```
-            </script>
+          <h2>Game Design: Tetris</h2>
+          <div class="pros-cons-list">
+            <div class="pros">
+              <img src="/img/tetris.png" alt="">
+            </div>
+            <div class="cons">
+              <ul>
+                <li>10x22 (W x H) grid</li>
+                <li>7 different piece types, all 4 blocks</li>
+                <li>Creating a contiguous horizontal line of blocks clears the line</li>
+                <li>Should be a piece of cake!</li>
+              </ul>
+            </div>
           </div>
         </section>
 
         <section>
-          <h2>Benefits of Declarative Views</h2>
+          <h2>Think About State First</h2>
           <ul>
-            <li class="fragment">Views are not modelled as Finite State Machines</li>
-            <li class="fragment">Declare how a certain state should be rendered and the framework takes care of the state transition</li>
-          </ul>
-          <!-- TODO: insert react component image -->
-        </section>
-
-        <!-- BEGIN FLUX -->
-        <section>
-          <h2>Flux Architecture</h2>
-          <ul>
-            <li>Architecture, not a Framework</li>
-            <li class="fragment">Given some state + props => deterministically renders DOM</li>
-            <div data-markdown>
-              <script type="text/template">
-                ```js
-                var flux = require('flux');
-                var storeFactory = require('flux/factories/store_factory');
-                ```
-              </script>
-            </div>
+            <li class="fragment">Block - type ('I', 'L', 'J', etc), structure (array of translations), and spawn position</li>
+            <li class="fragment">Board - 10 x 22 grid.  Each grid space can be empty or contain a block</li>
+            <li class="fragment">Active Piece - the piece the user is controlling on the board</li>
+            <li class="fragment">Number of lines cleared</li>
+            <li class="fragment">isPaused and isOver</li>
           </ul>
         </section>
 
         <section>
-          <section>
-            <h2>Our Problem:</h2>
-            <p>The more portable and reusable UI components became the harder it was to keep them in sync and share data</p>
-          </section>
-
-          <section>
-            <h2>Solution #1:</h2>
-            <p>Parent or Root Component manage state shared by child components</p>
-            <div class="pros-cons-list">
-              <div class="pros">
-                <h4>Pros:</h4>
-                <ul>
-                  <li>Always referencing same objects, stuff stays in sync</li>
-                </ul>
-              </div>
-              <div class="cons">
-                <h4>Cons:</h4>
-                <ul>
-                  <li>Tedious data passing down the component heirarchy</li>
-                  <li>State must be kept at the common ancestor - must refactor a lot</li>
-                  <li>Application state in UI component</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2>Solution #2:</h2>
-            <p>Using events to communicate changes in state</p>
-            <div class="pros-cons-list">
-              <div class="pros">
-                <h4>Pros:</h4>
-                <ul>
-                  <li>No need for passing data down component heirarchy</li>
-                </ul>
-              </div>
-              <div class="cons">
-                <h4>Cons:</h4>
-                <ul>
-                  <li>Very hard to understand</li>
-                  <li>Any component changing a piece of state is responsible for letting the world know</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2>Our Solution</h2>
-            <p>Use Flux as a decoupled way to model application and UI state</p>
-            <div class="pros-cons-list">
-              <div class="pros">
-                <h4>Pros:</h4>
-                <ul>
-                  <li>Data and state decoupled from the UI</li>
-                  <li>Any component can subscribe to any piece of state</li>
-                  <li>Components always stay in sync and become stateless</li>
-                  <li>Provides a predictable 1-way data flow</li>
-                </ul>
-              </div>
-              <div class="cons">
-                <h4>Cons:</h4>
-                <ul>
-                  <li>More boilerplate to do simple tasks</li>
-                  <li>A new design pattern to learn</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-        </section>
-
-        <section>
-          <h2>Flux Overview</h2>
-          <img src="/img/flux_diagram_pres.png" alt="">
-        </section>
-
-        <section>
-          <h2>Lets See a Store</h2>
-          <div data-markdown>
-            <script type="text/template">
-              ```js
-              var flux = require('flux');
-              var storeFactory = require('flux/factories/store_factory');
-              var actionTypes = require('flux/constants/action_types');
-
-              module.exports = storeFactory.create({
-                initialize: function() {
-                  this.tableFilters = {
-                    experiments: {}
-                  };
-
-                  this.bindActions(
-                    actionTypes.DASHBOARD_SET_TABLE_FILTERS, this.__setFilters
-                  );
-                },
-
-                getFilters: function(category) {
-                  return this.tableFilters[category];
-                },
-
-                __setFilters: function(payload) {
-                  var category = payload.category;
-                  var newFilters = payload.filters;
-                  var currentFilters = this.tableFilters[category];
-
-                  if (!_.isEqual(currentFilters, newFilters)) {
-                    this.tableFilters[category] = newFilters;
-                    this.emitChange();
-                  }
-                },
-              })
-              ```
-            </script>
-          </div>
-        </section>
-
-        <section>
-          <h2>Action Example</h2>
-          <div data-markdown>
-            <script type="text/template">
-              ```js
-              var flux = require('flux');
-              var actionTypes = require('flux/constants/action_types');
-
-              flux.dispatch(actionTypes.DASHBOARD_SET_TABLE_FILTERS, {
-                category: 'experiments',
-                filters: {
-                  string: 'optimizely',
-                }
-              });
-              ```
-            </script>
-          </div>
-        </section>
-
-        <section>
-          <h2>Getters</h2>
-          <ul>
-            <li>Functional transformation and composition of data in one or many stores</li>
-            <li>This is how inter-store dependent data is resolved</li>
-            <li>No dispatcher.waitFor(store)</li>
-          </ul>
-
-          <div data-markdown class="fragment">
-            <script type="text/template">
-              ```js
-              /**
-               * Function getter to take currentProject + experiments store
-               * and return all experiments for that project
-               */
-              module.exports = [
-                'currentProject',
-                'experiments',
-                function (currentProjectStore, experimentStore) {
-                  var currentProjectId = currentProjectStore.getId()
-                  if (currentProjectId) {
-                    return experimentStore.getAll({
-                      project_id: currentProjectId
-                    });
-                  } else {
-                    return [];
-                  }
-                }
-              ];
-            ```
-            </script>
-          </div>
-        </section>
-
-        <section>
-          <h2>Getter Example</h2>
-          <p>Filtering experiments by some string</p>
-          <div data-markdown>
-            <script type="text/template">
-              ```js
-              var getCurrentProjectExperiments = require('flux/getters/current_project/experiments');
-
-              module.exports = [
-                getCurrentProjectExperiments,
-                'dashboard/tableFilters',
-                function (experiments, filterStore) {
-                  var filters = filterStore.getFilters('experiments');
-                  var filterString = filters.string;
-
-                  if (filterString) {
-                    filterString = filterString.toLowerCase();
-                    return experiments.filter(function(exp) {
-                      var title = exp.description.toLowerCase();
-                      return _.contains(title, filterString);
-                    });
-                  }
-
-                  return experiments;
-                }
-              ];
-              ```
-            </script>
-          </div>
-        </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <section>
-          <h2>Component Example</h2>
-
-          <input type="text" id="search" placeholder="search for experiments" />
-
-          <script type="text/javascript">
-            var input = document.getElementById('search')
-            input.addEventListener('keyup', function(e) {
-              flux.dispatch(actionTypes.DASHBOARD_SET_TABLE_FILTERS, {
-                category: 'experiments',
-                filters: {
-                  string: e.target.value,
-                }
-              });
-            })
-          </script>
-        </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <section>
-          <h2>How do we test it?</h2>
-          <div id="dashboard" class="fragment lego"></div>
-          <h2 style="margin-top: 30px;" class="fragment">What is the giant white box for?</h2>
+          <h2>Lets get started</h2>
+          <h3>http://github.com/jordangarcia/tetris</h3>
         </section>
 
         <section>
